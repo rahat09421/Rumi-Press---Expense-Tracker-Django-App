@@ -1,0 +1,22 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Distribution Admin{% endblock %}
+
+{% block branding %}
+    <h1 id="site-name">
+        <a href="{% url "admin:index" %}">Distribution Expense Tracker</a>
+    </h1>
+{% endblock %}
+
+{% block nav-global %}
+    <a href= "{% url 'distribution:import_books' %}" class="button" style="
+        margin-left: 15px;
+        background-color: #417690;
+        color: white;
+        padding: 6px 10px;
+        border-radius: 5px;
+        text-decoration: none;"
+        >Import Books 
+    </a>
+{% endblock %}

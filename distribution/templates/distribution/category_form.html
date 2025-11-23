@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}
+    {% if form.instance.pk %}Edit Category
+    {% else %}Add Category{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class='row'>
+    <div class='col-md-8'>
+        <div class='card'>
+            <div class='card-body'>
+                <h4 class='card-title'>
+                    {% if form.instance.pk %}
+                    Edit Category
+                    {% else %} Add Category
+                    {% endif %}
+                </h4>
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {% if read_only %}
+                    <div class='alert alert-warning'>Read-only for your role: you cannot edit records created by another admin.</div>
+                    {% endif %}
+                    {{ form.as_p }}
+                    <div class='mt-3'>
+                        <button class='btn btn-primary' type='submit' {% if read_only %}disabled{% endif %}>Save</button>
+                        <a class='btn btn-secondary' href="{% url 'distribution:category_list' %}">Cancel</a>
+                    </div>
+                </form>
+                {% if read_only %}
+                <script>
+                  document.querySelectorAll('form input, form select, form textarea').forEach(function(el){
+                    el.setAttribute('disabled','disabled');
+                  });
+                </script>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

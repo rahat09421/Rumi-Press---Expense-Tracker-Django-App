@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}{{ form.instance.pk|yesno:"Edit Book,Add New Book" }} - Rumi Press{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h3 class="mb-3">
+                {% if form.instance.pk %}
+                    Edit Book
+                {% else %}
+                    Add New Book
+                {% endif %}
+            </h3>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% if read_only %}
+                <div class="alert alert-warning mb-3">Read-only for your role: you cannot edit records created by another admin.</div>
+                {% endif %}
+                
+                <div class="mb-3">
+                    {{ form.source_id.label_tag }} 
+                    {{ form.source_id }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.title.label_tag }} 
+                    {{ form.title }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.subtitle.label_tag }}
+                    {{ form.subtitle }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.author.label_tag }} 
+                    {{ form.author }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.publisher.label_tag }} 
+                    {{ form.publisher }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.publishing_date.label_tag }}
+                    {{ form.publishing_date }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.category.label_tag }} 
+                    {{ form.category }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.distribution_expenses.label_tag }}
+                    {{ form.distribution_expenses }}
+                </div>
+
+                <button type="submit" class="btn btn-primary" {% if read_only %}disabled{% endif %}>Save</button>
+                <a href="{% url 'distribution:book_list' %}" class="btn btn-secondary">Cancel</a>
+            </form>
+            {% if read_only %}
+            <script>
+              // Disable all inputs/selects when read-only
+              document.querySelectorAll('form input, form select, form textarea').forEach(function(el){
+                el.setAttribute('disabled','disabled');
+              });
+            </script>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

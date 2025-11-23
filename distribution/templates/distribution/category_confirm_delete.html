@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<div class='card'>
+    <div class='card-body'>
+        <h4>Delete Category</h4>
+        <p>Are you sure you want to delete <strong>{{ object.name}}</strong>?</p>
+        <form method="post">
+            {% csrf_token %}
+            <button class='btn btn-danger' type="submit">Yes, Delete</button>
+            <a class='btn btn-secondary' href="{% url 'distribution:category_list' %}">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock  %}

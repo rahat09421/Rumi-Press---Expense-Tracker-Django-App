@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{% block title %}Rumi Press — Distribution{% endblock %}</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom site CSS (static) -->
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'distribution/css/site.css' %}?v=20251119">
+
+  <style>
+    /* small inline fallback if static not found */
+    body{ padding-top:72px; }
+  </style>
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  {% block navbar %}
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top shadow-sm rp-navbar">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{% url 'home' %}">Rumi Press</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navMain">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="{% url 'distribution:book_list' %}">Books</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'distribution:category_list' %}">Categories</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'distribution:expenses_report' %}">Reports</a></li>
+        </ul>
+
+        <ul class="navbar-nav ms-auto">
+          {% if user.is_authenticated %}
+            {% if user.is_superuser %}
+              <li class="nav-item"><a class="nav-link" href="{% url 'accounts:create_admin' %}">Manage Admins</a></li>
+            {% endif %}
+            <li class="nav-item">
+              <form method="post" action="{% url 'logout_redirect' %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="nav-link btn btn-link">Logout</button>
+              </form>
+            </li>
+          {% else %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+  {% endblock %}
+
+  <main class="container rp-main">
+    {% if messages %}
+      <div class="mt-3">
+        {% for message in messages %}
+          <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'info' }}{% endif %} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="bg-light text-muted mt-5 py-3">
+    <div class="container text-center small">
+      © {{ now|date:"Y" }} Rumi Press — Distribution Tracker
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    (function() {
+      const DEFAULT_MS = 4000;
+      function schedule(el) {
+        if (!el || el.dataset.autoDismissBound) return;
+        el.dataset.autoDismissBound = '1';
+        const ms = parseInt(el.getAttribute('data-dismiss-ms') || DEFAULT_MS, 10);
+        setTimeout(function() {
+          try { bootstrap.Alert.getOrCreateInstance(el).close(); } catch (e) { el.remove(); }
+        }, ms);
+      }
+      function scan() { document.querySelectorAll('.alert').forEach(schedule); }
+      if (document.readyState === 'loading') { window.addEventListener('DOMContentLoaded', scan); } else { scan(); }
+      new MutationObserver(function(muts) {
+        muts.forEach(function(m) {
+          m.addedNodes && m.addedNodes.forEach(function(n) {
+            if (n.nodeType === 1) {
+              if (n.classList.contains('alert')) schedule(n);
+              n.querySelectorAll?.('.alert').forEach(schedule);
+            }
+          });
+        });
+      }).observe(document.body, { childList: true, subtree: true });
+    })();
+  </script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

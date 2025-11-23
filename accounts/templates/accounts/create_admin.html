@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% block title %}Create Admin Account{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <div class="card border-0 rounded-4 shadow-lg mb-4">
+      <div class="card-body p-4 p-md-5">
+        <h3 class="mb-2">Create Admin Account</h3>
+        <p class="text-muted mb-4">Superusers only. Email verification required.</p>
+        <form method="post" novalidate>
+          {% csrf_token %}
+          <div class="mb-3">
+            {{ form.username.label_tag }}
+            {{ form.username }}
+          </div>
+          <div class="mb-3">
+            {{ form.email.label_tag }}
+            {{ form.email }}
+          </div>
+          <div class="mb-3">
+            {{ form.password1.label_tag }}
+            {{ form.password1 }}
+            <div class="form-text">Min 12 chars, mixed case, digit, symbol.</div>
+          </div>
+          <div class="mb-4">
+            {{ form.password2.label_tag }}
+            {{ form.password2 }}
+          </div>
+          <div class="mb-4">
+            <label class="form-label d-block">Status</label>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="is_active" id="id_active_true" value="true" {% if form.is_active.value == 'true' or not form.is_active.value %}checked{% endif %}>
+              <label class="form-check-label" for="id_active_true">Active</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="is_active" id="id_active_false" value="false" {% if form.is_active.value == 'false' %}checked{% endif %}>
+              <label class="form-check-label" for="id_active_false">Inactive</label>
+            </div>
+          </div>
+          <div class="d-grid d-sm-flex gap-2">
+            <button type="submit" class="btn btn-primary btn-lg">Create Admin</button>
+            <a href="{% url 'distribution:book_list' %}" class="btn btn-outline-secondary btn-lg">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-10 col-lg-8">
+    <div class="card border-0 rounded-4 shadow-lg">
+      <div class="card-body p-4 p-md-5">
+        <h4 class="mb-3">Existing Staff Admins</h4>
+        <div class="table-responsive">
+          <table class="table table-striped table-hover align-middle">
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for u in staff_admins %}
+              <tr>
+                <td>{{ u.username }}</td>
+                <td>{{ u.email|default:"—" }}</td>
+                <td>
+                  {% if u.is_active %}
+                    <span class="badge bg-success">Active</span>
+                  {% else %}
+                    <span class="badge bg-secondary">Inactive</span>
+                  {% endif %}
+                </td>
+                <td class="text-end">
+                  <form method="post" action="{% url 'accounts:admin_set_status' %}" class="d-inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_id" value="{{ u.id }}" />
+                    <div class="btn-group btn-group-sm" role="group">
+                      <input type="radio" class="btn-check" name="status" id="status_active_{{ u.id }}" value="active" {% if u.is_active %}checked{% endif %}>
+                      <label class="btn btn-outline-success" for="status_active_{{ u.id }}">Active</label>
+                      <input type="radio" class="btn-check" name="status" id="status_inactive_{{ u.id }}" value="inactive" {% if not u.is_active %}checked{% endif %}>
+                      <label class="btn btn-outline-secondary" for="status_inactive_{{ u.id }}">Inactive</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm ms-2">Save</button>
+                  </form>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="3" class="text-muted text-center">No staff admins yet.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script>
+  (function(){
+    const form = document.querySelector('form[method="post"][novalidate]');
+    const p1 = document.getElementById('id_password1');
+    const p2 = document.getElementById('id_password2');
+
+    function isStrong(v){
+      return v.length >= 12 && /[a-z]/.test(v) && /[A-Z]/.test(v) && /[0-9]/.test(v) && /[^A-Za-z0-9]/.test(v);
+    }
+    function clearErrors(){
+      [p1, p2].forEach(el => el?.classList.remove('is-invalid'));
+      const e1 = document.getElementById('id_password1_error');
+      const e2 = document.getElementById('id_password2_error');
+      e1 && (e1.textContent = '');
+      e2 && (e2.textContent = '');
+    }
+    function showErrors(v1, v2){
+      let e1 = document.getElementById('id_password1_error');
+      if (!e1) { e1 = document.createElement('div'); e1.id='id_password1_error'; e1.className='invalid-feedback'; p1.after(e1); }
+      let e2 = document.getElementById('id_password2_error');
+      if (!e2) { e2 = document.createElement('div'); e2.id='id_password2_error'; e2.className='invalid-feedback'; p2.after(e2); }
+      if (!isStrong(v1)) {
+        p1.classList.add('is-invalid');
+        e1.textContent = 'Password must be at least 12 chars with upper, lower, digit, and symbol.';
+      }
+      if (v1 !== v2) {
+        p2.classList.add('is-invalid');
+        e2.textContent = 'Passwords do not match.';
+      }
+    }
+    function validateAndSubmit(){
+      const v1 = p1?.value || '';
+      const v2 = p2?.value || '';
+      clearErrors();
+      if (isStrong(v1) && v1 === v2) {
+        form.requestSubmit();
+      } else {
+        showErrors(v1, v2);
+      }
+    }
+
+    form?.addEventListener('submit', (e) => {
+      const v1 = p1?.value || '';
+      const v2 = p2?.value || '';
+      if (!isStrong(v1) || v1 !== v2) {
+        e.preventDefault();
+        showErrors(v1, v2);
+      }
+    });
+    form?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        validateAndSubmit();
+      }
+    });
+    form?.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        validateAndSubmit();
+      }
+    });
+    [p1, p2].forEach(el => {
+      el?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          validateAndSubmit();
+        }
+      });
+      el?.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          validateAndSubmit();
+        }
+      });
+    });
+  })();
+</script>
+{% endblock %}
