@@ -1,0 +1,11 @@
+# Exclude templates and static assets from GitHub Linguist language stats
+**/templates/** linguist-vendored
+**/static/** linguist-vendored
+
+# Optionally exclude common web assets
+*.html linguist-vendored
+*.css linguist-vendored
+*.js linguist-vendored
+
+# Treat docs as documentation
+docs/** linguist-documentation
