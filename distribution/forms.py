@@ -20,6 +20,9 @@ def add_bootstrap_classes(form):
         else:
             widget.attrs['class'] = f'{existing_classes} form-control'.strip()
 
+        if form.is_bound and form[field_name].errors:
+            widget.attrs['class'] = f"{widget.attrs.get('class','')} is-invalid".strip()
+
         # For date inputs
         if isinstance(widget, forms.DateInput):
             widget.attrs.setdefault('type', 'date')

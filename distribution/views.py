@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView, TemplateView
+from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from .models import Category, Book
@@ -60,17 +61,19 @@ class CategoryListView(LoginRequiredMixin, AuditLoggingMixin, ListView):
         }
         return ctx
     
-class CategoryCreateView(LoginRequiredMixin, AdminReadOnlyEnforcementMixin, AuditLoggingMixin, CreateView):
+class CategoryCreateView(SuccessMessageMixin, LoginRequiredMixin, AdminReadOnlyEnforcementMixin, AuditLoggingMixin, CreateView):
     model = Category
     form_class = CategoryForm
     template_name = 'distribution/category_form.html'
     success_url = reverse_lazy('distribution:category_list')
+    success_message = "Category created successfully."
     
-class CategoryUpdateView(LoginRequiredMixin, AdminReadOnlyEnforcementMixin, AuditLoggingMixin, UpdateView):
+class CategoryUpdateView(SuccessMessageMixin, LoginRequiredMixin, AdminReadOnlyEnforcementMixin, AuditLoggingMixin, UpdateView):
     model = Category
     form_class = CategoryForm
     template_name = 'distribution/category_form.html'
     success_url = reverse_lazy('distribution:category_list')
+    success_message = "Category updated successfully."
     
 class CategoryDeleteView(LoginRequiredMixin, AdminReadOnlyEnforcementMixin, AuditLoggingMixin, DeleteView):
     model = Category
@@ -171,17 +174,19 @@ class BookListView(LoginRequiredMixin, AuditLoggingMixin, ListView):
         ctx['dir'] = self.request.GET.get('dir', 'asc')
         return ctx
     
-class BookCreateView(LoginRequiredMixin, AdminReadOnlyEnforcementMixin, AuditLoggingMixin, CreateView):
+class BookCreateView(SuccessMessageMixin, LoginRequiredMixin, AdminReadOnlyEnforcementMixin, AuditLoggingMixin, CreateView):
     model = Book
     form_class = BookForm
     template_name = 'distribution/book_form.html'
     success_url = reverse_lazy('distribution:book_list')
+    success_message = "Book added successfully."
     
-class BookUpdateView(LoginRequiredMixin, AdminReadOnlyEnforcementMixin, AuditLoggingMixin, UpdateView):
+class BookUpdateView(SuccessMessageMixin, LoginRequiredMixin, AdminReadOnlyEnforcementMixin, AuditLoggingMixin, UpdateView):
     model = Book
     form_class = BookForm
     template_name = 'distribution/book_form.html'
     success_url = reverse_lazy('distribution:book_list')
+    success_message = "Book updated successfully."
 
 class BookDeleteView(LoginRequiredMixin, AdminReadOnlyEnforcementMixin, AuditLoggingMixin, DeleteView):
     model = Book

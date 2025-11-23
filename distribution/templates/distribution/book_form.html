@@ -22,41 +22,49 @@
                 <div class="mb-3">
                     {{ form.source_id.label_tag }} 
                     {{ form.source_id }}
+                    {% if form.source_id.errors %}<div class="invalid-feedback">{{ form.source_id.errors|first }}</div>{% endif %}
                 </div>
 
                 <div class="mb-3">
                     {{ form.title.label_tag }} 
                     {{ form.title }}
+                    {% if form.title.errors %}<div class="invalid-feedback">{{ form.title.errors|first }}</div>{% endif %}
                 </div>
 
                 <div class="mb-3">
                     {{ form.subtitle.label_tag }}
                     {{ form.subtitle }}
+                    {% if form.subtitle.errors %}<div class="invalid-feedback">{{ form.subtitle.errors|first }}</div>{% endif %}
                 </div>
 
                 <div class="mb-3">
                     {{ form.author.label_tag }} 
                     {{ form.author }}
+                    {% if form.author.errors %}<div class="invalid-feedback">{{ form.author.errors|first }}</div>{% endif %}
                 </div>
 
                 <div class="mb-3">
                     {{ form.publisher.label_tag }} 
                     {{ form.publisher }}
+                    {% if form.publisher.errors %}<div class="invalid-feedback">{{ form.publisher.errors|first }}</div>{% endif %}
                 </div>
 
                 <div class="mb-3">
                     {{ form.publishing_date.label_tag }}
                     {{ form.publishing_date }}
+                    {% if form.publishing_date.errors %}<div class="invalid-feedback">{{ form.publishing_date.errors|first }}</div>{% endif %}
                 </div>
 
                 <div class="mb-3">
                     {{ form.category.label_tag }} 
                     {{ form.category }}
+                    {% if form.category.errors %}<div class="invalid-feedback d-block">{{ form.category.errors|first }}</div>{% endif %}
                 </div>
 
                 <div class="mb-3">
                     {{ form.distribution_expenses.label_tag }}
                     {{ form.distribution_expenses }}
+                    {% if form.distribution_expenses.errors %}<div class="invalid-feedback">{{ form.distribution_expenses.errors|first }}</div>{% endif %}
                 </div>
 
                 <button type="submit" class="btn btn-primary" {% if read_only %}disabled{% endif %}>Save</button>
